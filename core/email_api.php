@@ -339,6 +339,11 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, $p_extra_user_ids_
 			break;
 	}
 
+  $t_receive_all = config_get('email_users_receive_all', array());
+  if( isset( $t_receive_all[$p_notify_type] ) )
+    foreach( $t_receive_all[$p_notify_type] AS $t_tmpid )
+      $t_recipients[$t_tmpid] = true;
+
 	# @@@ we could optimize by modifiying user_cache() to take an array
 	#  of user ids so we could pull them all in.  We'll see if it's necessary
 	$t_final_recipients = array();
@@ -597,6 +602,23 @@ function email_generic( $p_bug_id, $p_notify_type, $p_message_id = null, $p_head
  * @param int $p_user_id
  * @return null
  */
+function email_vote( $p_bug_id, $p_user_id ) {
+  log_event( LOG_EMAIL, sprintf( 'Issue #%d voted on by user @U%d', $p_bug_id, $p_user_id ) );
+
+  $t_opt = array();
+  $t_opt[] = bug_format_id( $p_bug_id );
+  $t_opt[] = user_get_name( $p_user_id );
+
+  email_generic( $p_bug_id, 'monitor', 'email_notification_title_for_action_vote', $t_opt, array( $p_user_id ) );
+}
+
+/**
+ * Send notices that a user is now monitoring the bug.  Typically this will only be sent when the added
+ * user is not the logged in user.  This is assuming that receive own notifications is OFF (default).
+ * @param int $p_bug_id
+ * @param int $p_user_id
+ * @return null
+ */
 function email_monitor_added( $p_bug_id, $p_user_id ) {
 	log_event( LOG_EMAIL, sprintf( 'Issue #%d monitored by user @U%d', $p_bug_id, $p_user_id ) );
 
@@ -727,6 +749,7 @@ function email_sponsorship_deleted( $p_bug_id ) {
  * @return null
  */
 function email_new_bug( $p_bug_id ) {
+  // email_generic( $p_bug_id, 'new', 'email_notification_title_for_action_bug_submitted', null, config_get('email_users_receive_new',array()) );
 	email_generic( $p_bug_id, 'new', 'email_notification_title_for_action_bug_submitted' );
 }
 

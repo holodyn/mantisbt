@@ -68,10 +68,10 @@
 	# Login page shouldn't be indexed by search engines
 	html_robots_noindex();
 
-	html_page_top1();
-	html_page_top2a();
+  html_page_top1( lang_get( 'my_view_link' ) );
+  html_page_top2();
 
-	echo '<br /><div align="center">';
+  echo '<div align="center" style="clear:both">';
 
 	# Display short greeting message
 	# echo lang_get( 'login_page_info' ) . '<br />';
@@ -100,12 +100,16 @@
 ?>
 
 <!-- Login Form BEGIN -->
-<br />
 <div align="center">
-<form name="login_form" method="post" action="login.php">
-<?php # CSRF protection not required here - form does not result in modifications ?>
-<table class="width50" cellspacing="1">
-<tr>
+
+  <?php if( $f_return == 'bug_report_page.php' ) { ?>
+  <h2 class="please-login"> You must Login or Register before <br/>Submitting a Request </h2>
+  <?php } ?>
+
+  <form name="login_form" method="post" action="login.php">
+    <?php # CSRF protection not required here - form does not result in modifications ?>
+    <table class="width50" cellspacing="1">
+      <tr>
 	<td class="form-title">
 		<?php
 			if ( !is_blank( $f_return ) ) {
@@ -117,45 +121,43 @@
 	</td>
 	<td class="right">
 	<?php
-		if ( ON == config_get( 'allow_anonymous_login' ) ) {
-			print_bracket_link( 'login_anon.php?return=' . string_url( $f_return ), lang_get( 'login_anonymously' ) );
-		}
+          // Webuddha
+          // if ( ON == config_get( 'allow_anonymous_login' ) ) {
+          //   print_bracket_link( 'login_anon.php?return=' . string_url( $f_return ), lang_get( 'login_anonymously' ) );
+          // }
 	?>
 	</td>
-</tr>
-<tr class="row-1">
+      </tr>
+      <tr class="row-1">
 	<td class="category">
 		<?php echo lang_get( 'username' ) ?>
 	</td>
 	<td>
 		<input type="text" name="username" size="32" maxlength="<?php echo DB_FIELD_SIZE_USERNAME;?>" value="<?php echo string_attribute( $f_username ); ?>" />
 	</td>
-</tr>
-<tr class="row-2">
+      </tr>
+      <tr class="row-2">
 	<td class="category">
 		<?php echo lang_get( 'password' ) ?>
 	</td>
 	<td>
 		<input type="password" name="password" size="32" maxlength="<?php echo auth_get_password_max_size(); ?>" />
 	</td>
-</tr>
-<?php
-	if( ON == config_get( 'allow_permanent_cookie' ) ) {
-?>
-<tr class="row-1">
+      </tr>
+
+      <?php if( ON == config_get( 'allow_permanent_cookie' ) ) { ?>
+      <tr class="row-1">
 	<td class="category">
 		<?php echo lang_get( 'save_login' ) ?>
 	</td>
 	<td>
 	<input type="checkbox" name="perm_login" <?php echo ( $f_perm_login ? 'checked="checked" ' : '' ) ?>/>
 	</td>
-</tr>
-<?php
-	}
+      </tr>
+      <?php } ?>
 
-	if ( $t_session_validation ) {
-?>
-<tr class="row-2">
+      <?php if ( $t_session_validation ) { ?>
+      <tr class="row-2">
 	<td class="category">
 		<?php echo lang_get( 'secure_session' ) ?>
 	</td>
@@ -163,15 +165,15 @@
 	<input type="checkbox" name="secure_session" <?php echo ( $t_default_secure_session ? 'checked="checked" ' : '' ) ?>/>
 	<?php echo '<span class="small">' . lang_get( 'secure_session_long' ) . '</span>' ?>
 	</td>
-</tr>
-<?php } ?>
-<tr>
+      </tr>
+      <?php } ?>
+      <tr>
 	<td class="center" colspan="2">
 		<input type="submit" class="button" value="<?php echo lang_get( 'login_button' ) ?>" />
 	</td>
-</tr>
-</table>
-</form>
+      </tr>
+    </table>
+  </form>
 </div>
 
 <?php
@@ -268,4 +270,4 @@
 <?php } ?>
 
 <?php
-	html_page_bottom1a( __FILE__ );
+html_page_bottom1();

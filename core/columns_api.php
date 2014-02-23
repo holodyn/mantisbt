@@ -775,6 +775,13 @@ function print_column_title_summary( $p_sort, $p_dir, $p_columns_target = COLUMN
 	echo '</td>';
 }
 
+function print_column_title_vote_count( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
+  echo '<td>';
+  print_view_bug_sort_link( 'Votes', 'vote_count', $p_sort, $p_dir, $p_columns_target );
+  print_sort_icon( $p_dir, $p_sort, 'vote_count' );
+  echo '</td>';
+}
+
 /**
  *
  * @param string sort
@@ -1246,6 +1253,15 @@ function print_column_summary( $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_P
 	}
 
 	echo '<td class="left">' . $t_summary . '</td>';
+}
+
+function print_column_vote_count( $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
+  if( $p_columns_target == COLUMNS_TARGET_CSV_PAGE ) {
+    $t_votecount = string_attribute( $p_bug->vote_count );
+  } else {
+    $t_votecount = string_display_line_links( $p_bug->vote_count );
+  }
+  echo '<td class="center">' . $t_votecount . '</td>';
 }
 
 /**

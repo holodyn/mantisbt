@@ -84,14 +84,19 @@
 	if ( is_blank ( $t_bug_data->due_date ) ) {
 		$t_bug_data->due_date = date_get_null();
 	}
+  $t_bug_data->date_submitted         = gpc_get_string( 'date_submitted', '');
+  if ( is_blank ( $t_bug_data->date_submitted ) )
+    $t_bug_data->date_submitted = db_now();
 
 	$f_files                            = gpc_get_file( 'ufile', null ); /** @todo (thraxisp) Note that this always returns a structure */
 	$f_report_stay                      = gpc_get_bool( 'report_stay', false );
 	$f_copy_notes_from_parent           = gpc_get_bool( 'copy_notes_from_parent', false);
 	$f_copy_attachments_from_parent     = gpc_get_bool( 'copy_attachments_from_parent', false);
 
-	if ( access_has_project_level( config_get( 'roadmap_update_threshold' ), $t_bug_data->project_id ) ) {
+  if ( access_has_project_level( config_get( 'roadmap_update_threshold' ), $t_bug_data->project_id ) ){
 		$t_bug_data->target_version = gpc_get_string( 'target_version', '' );
+    if( $t_bug_data->status >= config_get( 'bug_readonly_status_threshold' ) )
+      $t_bug_data->fixed_in_version = $t_bug_data->target_version;
 	}
 
 	# if a profile was selected then let's use that information
@@ -142,6 +147,40 @@
 
 	# Create the bug
 	$t_bug_id = $t_bug_data->create();
+
+  # Create the Tags
+  $t_user_id = auth_get_current_user_id();
+  if( access_has_global_level( config_get( 'tag_view_threshold' ) ) && access_has_global_level( config_get( 'tag_attach_threshold' ) ) ){
+    $t_can_create = access_has_global_level( config_get( 'tag_create_threshold' ) );
+    $f_tag_string = gpc_get_string( 'tag_string' );
+    $t_tags = tag_parse_string( $f_tag_string );
+    $t_tags_create = $t_tags_attach = $t_tags_failed = array();
+    foreach ( $t_tags as $t_tag_row ) {
+      if ( -1 == $t_tag_row['id'] ) {
+        if ( $t_can_create ) {
+          $t_tags_create[] = $t_tag_row;
+        } else {
+          $t_tags_failed[] = $t_tag_row;
+        }
+      } else if ( -2 == $t_tag_row['id'] ) {
+        $t_tags_failed[] = $t_tag_row;
+      } else {
+        $t_tags_attach[] = $t_tag_row;
+      }
+    }
+    if ( 0 < $f_tag_select && tag_exists( $f_tag_select ) ) {
+      $t_tags_attach[] = tag_get( $f_tag_select );
+    }
+    foreach( $t_tags_create as $t_tag_row ) {
+      $t_tag_row['id'] = tag_create( $t_tag_row['name'], $t_user_id );
+      $t_tags_attach[] = $t_tag_row;
+    }
+    foreach( $t_tags_attach as $t_tag_row ) {
+      if ( !tag_bug_is_attached( $t_tag_row['id'], $t_bug_id ) ) {
+        tag_bug_attach( $t_tag_row['id'], $t_bug_id, $t_user_id );
+      }
+    }
+  }
 
 	# Mark the added issue as visited so that it appears on the last visited list.
 	last_visited_issue( $t_bug_id );
@@ -241,7 +280,18 @@
 	html_page_top1();
 
 	if ( !$f_report_stay ) {
-		html_meta_redirect( 'view_all_bug_page.php' );
+
+    if( $t_bug_data->status < config_get( 'bug_readonly_status_threshold' ) ){
+      html_meta_redirect( 'view.php?id='.$t_bug_id);
+    } else {
+      bug_update_date( $t_bug_id, $t_bug_data->date_submitted );
+      $t_category_table = db_get_table( 'mantis_category_table' );
+      $result = db_query_bound("SELECT `name` FROM ".$t_category_table." WHERE `id` = ".db_param(),Array( $t_bug_data->category_id ));
+      $row = db_fetch_array( $result );
+      html_meta_redirect( 'browse.php?reset=true&category='.$row['name']);
+    }
+
+    # html_meta_redirect( 'view_all_bug_page.php' );
 	}
 
 	html_page_top2();

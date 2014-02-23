@@ -189,6 +189,15 @@ function excel_get_columns() {
 # field name as return get excel_get_columns() and by the filter api.
 #
 /**
+ * Gets the formatted bug vote_count value.
+ * @param object $p_bug the bug
+ * @returns The bug vote_count
+ */
+function excel_format_vote_count( $p_bug ) {
+  return excel_prepare_string( (int)$p_bug->vote_count );
+}
+
+/**
  * Gets the formatted bug id value.
  * @param object $p_bug the bug
  * @returns The bug id prefixed with 0s.

@@ -75,6 +75,7 @@ class BugData {
 	protected $reporter_id = 0;
 	protected $handler_id = 0;
 	protected $duplicate_id = 0;
+  protected $vote_count = 0; // Webuddha
 	protected $priority = NORMAL;
 	protected $severity = MINOR;
 	protected $reproducibility = 10;
@@ -152,6 +153,7 @@ class BugData {
 			case 'reporter_id':
 			case 'handler_id':
 			case 'duplicate_id':
+      case 'vote_count': // Webuddha
 			case 'priority':
 			case 'severity':
 			case 'reproducibility':
@@ -169,6 +171,11 @@ class BugData {
 					}
 				}
 				break;
+      case 'date_submitted':
+        if ( !is_numeric( $value ) ) {
+          $value = strtotime($value);
+        }
+        break;
 			case 'due_date':
 				if ( !is_numeric( $value ) ) {
 					$value = strtotime($value);
@@ -365,8 +372,7 @@ class BugData {
 					      " . db_param() . ',' . db_param() . ',' . db_param() . ',' . db_param() . ",
 					      " . db_param() . ',' . db_param() . ',' . db_param() . ',' . db_param() . ",
 					      " . db_param() . ',' . db_param() . ',' . db_param() . ',' . db_param() . ')';
-
-		db_query_bound( $query, Array( $this->project_id, $this->reporter_id, $this->handler_id, $this->duplicate_id, $this->priority, $this->severity, $this->reproducibility, $t_status, $this->resolution, $this->projection, $this->category_id, db_now(), db_now(), $this->eta, $t_text_id, $this->os, $this->os_build, $this->platform, $this->version, $this->build, $this->profile_id, $this->summary, $this->view_state, $this->sponsorship_total, $this->sticky, $this->fixed_in_version, $this->target_version, $this->due_date ) );
+    db_query_bound( $query, Array( $this->project_id, $this->reporter_id, $this->handler_id, $this->duplicate_id, $this->priority, $this->severity, $this->reproducibility, $t_status, $this->resolution, $this->projection, $this->category_id, ($this->date_submitted == date_get_null() ? db_now() : $this->date_submitted), db_now(), $this->eta, $t_text_id, $this->os, $this->os_build, $this->platform, $this->version, $this->build, $this->profile_id, $this->summary, $this->view_state, $this->sponsorship_total, $this->sticky, $this->fixed_in_version, $this->target_version, $this->due_date ) );
 
 		$this->id = db_insert_id( $t_bug_table );
 
@@ -376,6 +382,9 @@ class BugData {
 		# log changes, if any (compare happens in history_log_event_direct)
 		history_log_event_direct( $this->id, 'status', $t_original_status, $t_status );
 		history_log_event_direct( $this->id, 'handler_id', 0, $this->handler_id );
+
+    # vote on new bug
+    bug_vote( $this->id, $this->reporter_id );
 
 		return $this->id;
 	}
@@ -1183,6 +1192,10 @@ function bug_delete( $p_bug_id ) {
 				  WHERE id=" . db_param();
 	db_query_bound( $query, Array( $c_bug_id ) );
 
+  # Delete the bug votes
+  $t_bug_vote_table = db_get_table( 'mantis_bug_vote_table' );
+  db_query_bound( "DELETE FROM $t_bug_vote_table WHERE `bug_id` = " . db_param(), Array( $c_bug_id ) );
+
 	bug_clear_cache( $p_bug_id );
 	bug_text_clear_cache( $p_bug_id );
 
@@ -1734,19 +1747,71 @@ function bug_reopen( $p_bug_id, $p_bugnote_text = '', $p_time_tracking = '0:00',
  * @access public
  * @uses database_api.php
  */
-function bug_update_date( $p_bug_id ) {
+function bug_update_date( $p_bug_id, $t_date_timestamp=null ) {
 	$c_bug_id = (int) $p_bug_id;
 
 	$t_bug_table = db_get_table( 'mantis_bug_table' );
+  $t_date_timestamp = is_null($t_date_timestamp) ? db_now() : $t_date_timestamp;
 
 	$query = "UPDATE $t_bug_table
 				  SET last_updated= " . db_param() . "
 				  WHERE id=" . db_param();
-	db_query_bound( $query, Array( db_now(), $c_bug_id ) );
+  db_query_bound( $query, Array( $t_date_timestamp, $c_bug_id ) );
 
 	bug_clear_cache( $c_bug_id );
 
 	return true;
+}
+
+function bug_vote( $p_bug_id, $p_user_id ) {
+  $c_bug_id = (int) $p_bug_id;
+  $c_user_id = (int) $p_user_id;
+
+  # Don't let the anonymous user monitor bugs
+  if ( user_is_anonymous( $c_user_id ) ) {
+    return false;
+  }
+
+  $t_bug_vote_table = db_get_table( 'mantis_bug_vote_table' );
+
+  # Check History
+  $result = db_query_bound(
+    "SELECT COUNT(*) AS `total` FROM ".$t_bug_vote_table." WHERE bug_id = ".db_param()." AND user_id = ".db_param(),
+    Array( $c_bug_id, $c_user_id )
+    );
+  $row = db_fetch_array( $result );
+
+  # Only if Not Previous
+  if( $row['total'] <= 0 ){
+
+    # Insert vote record
+    $result = db_query_bound(
+      "INSERT INTO ".$t_bug_vote_table." ( bug_id, user_id, date_created ) VALUES (".db_param().",".db_param().",".db_param().")",
+      Array( $c_bug_id, $c_user_id, db_now() )
+      );
+    if( $result ){
+      $t_bug_table = db_get_table( 'mantis_bug_table' );
+      db_query_bound("
+        UPDATE ".$t_bug_table."
+        SET `vote_count` = `vote_count` + 1
+        WHERE `id` = ".db_param()
+        , Array( $c_bug_id )
+        );
+    }
+
+    # log new monitoring action
+    history_log_event_special( $c_bug_id, BUG_VOTE, $c_user_id );
+
+    # updated the last_updated date
+    bug_update_date( $p_bug_id );
+
+    # send email
+    email_vote( $p_bug_id, $p_user_id );
+
+    return true;
+  }
+
+  return false;
 }
 
 /**

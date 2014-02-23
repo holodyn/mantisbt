@@ -34,6 +34,7 @@
 
 	$f_project_id = gpc_get_int( 'project_id' );
 	$f_show_global_users = gpc_get_bool( 'show_global_users' );
+  $f_show_obsolete = gpc_get_bool( 'show_obsolete', false );
 
 	project_ensure_exists( $f_project_id );
 	$g_project_override = $f_project_id;
@@ -443,6 +444,7 @@ if ( access_has_global_level ( config_get( 'delete_project_threshold' ) ) ) { ?>
 	}
 
 	foreach ( $t_versions as $t_version ) {
+
 		if ( $t_version['project_id'] != $f_project_id ) {
 			$t_inherited = true;
 		} else {
@@ -453,6 +455,9 @@ if ( access_has_global_level ( config_get( 'delete_project_threshold' ) ) ) { ?>
 
 		$t_released = $t_version['released'];
 		$t_obsolete = $t_version['obsolete'];
+
+    if( $t_obsolete && !$f_show_obsolete ) continue;
+
 		if( !date_is_null( $t_version['date_order'] ) ) {
 			$t_date_formatted = date( config_get( 'complete_date_format' ), $t_version['date_order'] );
 		} else {
@@ -473,7 +478,7 @@ if ( access_has_global_level ( config_get( 'delete_project_threshold' ) ) ) { ?>
 			<td class="center">
 				<?php echo $t_date_formatted ?>
 			</td>
-			<td class="center">
+      <td class="center" nowrap>
 				<?php
 					$t_version_id = version_get_id( $t_name, $f_project_id );
 
@@ -489,9 +494,9 @@ if ( access_has_global_level ( config_get( 'delete_project_threshold' ) ) ) { ?>
 	} # end for loop
 ?>
 
-<!-- Version Add Form -->
-<tr>
-	<td class="left" colspan="3">
+  <!-- Version Add Form -->
+  <tr>
+    <td class="left" colspan="5">
 		<form method="post" action="manage_proj_ver_add.php">
 			<?php echo form_security_field( 'manage_proj_ver_add' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
@@ -500,8 +505,8 @@ if ( access_has_global_level ( config_get( 'delete_project_threshold' ) ) ) { ?>
 			<input type="submit" name="add_and_edit_version" class="button" value="<?php echo lang_get( 'add_and_edit_version_button' ) ?>" />
 		</form>
 	</td>
-</tr>
-<tr>
+  </tr>
+  <tr>
 	<td class="left" colspan="3">
 		<form method="post" action="manage_proj_ver_copy.php">
 			<?php echo form_security_field( 'manage_proj_ver_copy' ) ?>
@@ -513,7 +518,15 @@ if ( access_has_global_level ( config_get( 'delete_project_threshold' ) ) ) { ?>
 			<input type="submit" name="copy_to" class="button" value="<?php echo lang_get( 'copy_versions_to' ) ?>" />
 		</form>
 	</td>
-</tr>
+    <td class="right" colspan="2">
+      <form method="post" action="manage_proj_edit_page.php">
+        <input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
+        Show Obsolete
+        <input type="checkbox" name="show_obsolete" <?php check_checked( $f_show_obsolete, ON ); ?> onchange />
+        <input type="submit" class="button" value=" GO " />
+      </form>
+    </td>
+  </tr>
 </table>
 </div>
 

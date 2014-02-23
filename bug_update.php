@@ -229,6 +229,10 @@
 	# Update the bug entry, notify if we haven't done so already
 	$t_bug_data->update( true, ( false == $t_notify ) );
 
+  # Update the bug last_updated string
+  if( strlen(gpc_get_string('last_updated','')) )
+    bug_update_date( $f_bug_id, strtotime(gpc_get_string('last_updated',''))  );
+
 	form_security_purge( 'bug_update' );
 
 	helper_call_custom_function( 'issue_update_notify', array( $f_bug_id ) );

@@ -1,0 +1,36 @@
+
+# 2008 Holodyn Corporation
+
+# -------- Default Pages
+
+  DirectoryIndex index.php index.html index.htm
+  # Redirect /index.html http://www.website.com/subfolder/index.html
+
+# -------- Prevent Snooping
+
+  <Files .htaccess>
+  order allow,deny
+  deny from all
+  </Files>
+  IndexIgnore */*
+  Options +FollowSymLinks
+  Options -Indexes
+
+# -------- mod_rewrite in use
+
+  RewriteEngine On
+
+# -------- Add Missing WWW
+
+  # RewriteCond %{HTTP_HOST} ^wbteampro\.com$ [NC]
+  # RewriteRule ^(.*)$ http://tracker\.wbteampro.com/$1 [R=301,L]
+
+# -------- Changelog
+
+  RewriteCond %{REQUEST_FILENAME} /changelog$
+  RewriteRule ^(.*) changelog_page.php
+
+# -------- Roadmap
+
+  RewriteCond %{REQUEST_FILENAME} /roadmap$
+  RewriteRule ^(.*) roadmap_page.php

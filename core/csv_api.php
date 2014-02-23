@@ -102,6 +102,16 @@ function csv_get_columns() {
  * @return string csv formatted bug id
  * @access public
  */
+function csv_format_vote_count( $p_bug ) {
+  return (int)$p_bug->vote_count;
+}
+
+/**
+ * returns the formatted bug id
+ * @param object $p_bug the bug
+ * @return string csv formatted bug id
+ * @access public
+ */
 function csv_format_id( $p_bug ) {
 	return bug_format_id( $p_bug->id );
 }

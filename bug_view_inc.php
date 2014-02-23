@@ -156,8 +156,9 @@
 	$tpl_show_steps_to_reproduce = !is_blank( $tpl_bug->steps_to_reproduce ) && in_array( 'steps_to_reproduce', $t_fields );
 	$tpl_show_monitor_box = !$tpl_force_readonly;
 	$tpl_show_relationships_box = !$tpl_force_readonly;
-	$tpl_show_upload_form = !$tpl_force_readonly && !bug_is_readonly( $f_bug_id );
-	$tpl_show_history = $f_history;
+  $tpl_bug_is_readonly = bug_is_readonly( $f_bug_id );
+  $tpl_show_upload_form = !$tpl_force_readonly && !$tpl_bug_is_readonly;
+  $tpl_show_history = $f_history && access_has_bug_level( config_get( 'tag_history_threshold' ), $f_bug_id );
 	$tpl_show_profiles = config_get( 'enable_profiles' );
 	$tpl_show_platform = $tpl_show_profiles && in_array( 'platform', $t_fields );
 	$tpl_platform = $tpl_show_platform ? string_display_line( $tpl_bug->platform ) : '';
@@ -258,23 +259,37 @@
 
 
 	# Links
-	echo '<td class="right" colspan="2">';
+  echo '<td class="right" colspan="2" nowrap>';
 
-	if ( !is_blank( $tpl_history_link ) ) {
+  if ( $tpl_show_history && !is_blank( $tpl_history_link ) ) {
 		# History
 		echo '<span class="small">';
 		print_bracket_link( $tpl_history_link, lang_get( 'bug_history' ) );
 		echo '</span>';
 	}
 
+  if ( $tpl_show_history ) {
 	# Print Bug
 	echo '<span class="small">';
 	print_bracket_link( $tpl_print_link, lang_get( 'print' ) );
 	echo '</span>';
+  }
+
+  echo '<div class="votes" style="display:inline;font-weight:bold;">'. $tpl_bug->vote_count .' Vote'.($tpl_bug->vote_count != 1 ? 's' : '').'</div>';
+  if( !$tpl_bug_is_readonly ) html_button_vote( $f_bug_id );
+
+  if( access_has_bug_level( REPORTER, $f_bug_id ) ) {
+    if( user_is_monitoring_bug( auth_get_current_user_id(), $f_bug_id ) ) {
+      html_button_bug_unmonitor( $f_bug_id );
+    } else {
+      html_button_bug_monitor( $f_bug_id );
+    }
+  }
+
 	echo '</td>';
 	echo '</tr>';
 
-	if ( $tpl_top_buttons_enabled ) {
+  if ( $tpl_top_buttons_enabled && access_has_bug_level( DEVELOPER, $f_bug_id ) ) {
 		echo '<tr align="center">';
 		echo '<td align="center" colspan="6">';
 		html_buttons_view_bug_page( $tpl_bug_id );
@@ -684,7 +699,7 @@
 		echo '</td></tr>';
 	}
 
-	if ( $tpl_bottom_buttons_enabled ) {
+  if ( $tpl_bottom_buttons_enabled && access_has_bug_level( DEVELOPER, $f_bug_id ) ) {
 		echo '<tr align="center"><td align="center" colspan="6">';
 		html_buttons_view_bug_page( $tpl_bug_id );
 		echo '</td></tr>';
@@ -694,16 +709,6 @@
 
 	# User list sponsoring the bug
 	include( $tpl_mantis_dir . 'bug_sponsorship_list_view_inc.php' );
-
-	# Bug Relationships
-	if ( $tpl_show_relationships_box ) {
-		relationship_view_box ( $tpl_bug->id );
-	}
-
-	# File upload box
-	if ( $tpl_show_upload_form ) {
-		include( $tpl_mantis_dir . 'bug_file_upload_inc.php' );
-	}
 
 	# User list monitoring the bug
 	if ( $tpl_show_monitor_box ) {
@@ -725,6 +730,11 @@
 		include( $tpl_mantis_dir . 'bugnote_view_inc.php' );
 	}
 
+  # File upload box
+  if ( $tpl_show_upload_form ) {
+    include( $tpl_mantis_dir . 'bug_file_upload_inc.php' );
+  }
+
 	# Allow plugins to display stuff after notes
 	event_signal( 'EVENT_VIEW_BUG_EXTRA', array( $f_bug_id ) );
 
@@ -738,6 +748,11 @@
 	if ( $tpl_show_history ) {
 		include( $tpl_mantis_dir . 'history_inc.php' );
 	}
+
+  # Bug Relationships
+  if ( $tpl_show_relationships_box ) {
+    relationship_view_box ( $tpl_bug->id );
+  }
 
 	html_page_bottom();
 

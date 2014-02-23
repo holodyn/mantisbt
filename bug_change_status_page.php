@@ -180,6 +180,22 @@ if ( access_has_bug_level( config_get( 'update_bug_assign_threshold', config_get
 </tr>
 <?php } ?>
 
+<?php if ( access_has_project_level(config_get( 'update_bug_assign_threshold' )) ) {
+  $t_date_to_display = date( config_get( 'calendar_date_format' ), db_now() );
+  ?>
+  <!-- Due date -->
+  <tr <?php echo helper_alternate_class() ?>>
+    <td class="category">Updated Date</td>
+    <td>
+    <?php
+        print "<input ".helper_get_tab_index()." type=\"text\" id=\"last_updated\" name=\"last_updated\" size=\"20\" maxlength=\"16\" value=\"".$t_date_to_display."\" />";
+      date_print_calendar('trigger_lastupdated');
+    ?>
+    </td>
+  </tr>
+  <?php
+} ?>
+
 <?php if ( $t_can_update_due_date ) {
 	$t_date_to_display = '';
 	if ( !date_is_null( $t_bug->due_date ) ) {
@@ -368,6 +384,9 @@ if ( ( $f_new_status >= $t_resolved ) && ( $t_closed > $f_new_status ) ) { ?>
 </div>
 
 <?php
+if( access_has_project_level(config_get( 'update_bug_assign_threshold' )) ){
+  date_finish_calendar( 'last_updated', 'trigger_lastupdated');
+}
 if ( $t_can_update_due_date ) {
 	date_finish_calendar( 'due_date', 'trigger');
 }

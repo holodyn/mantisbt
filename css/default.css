@@ -1,9 +1,9 @@
 body {
-	background-color: #ffffff;
+  background-color: #FFFFFF;
 	color: #000000;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
-	margin: 6px 4px;
+  margin: 0;
 }
 
 p 					{ font-family: Verdana, Arial, Helvetica, sans-serif; }
@@ -12,7 +12,7 @@ address 			{ font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt 
 
 pre				{ margin-top: 0px; margin-bottom: 0px; }
 
-a					{}
+a { color:#335577; }
 a:active 			{}
 a:link    			{}
 a:visited 			{}
@@ -97,7 +97,6 @@ td.menu
 	background-color: #e8e8e8;
 	color: #000000;
 	text-align: center;
-	width: 100%;
 	padding: 5px;
 }
 
@@ -186,3 +185,389 @@ div.quick-summary-right	{ width: 49%; padding: 2px; text-align: right; float: ri
 
 .progress400				{ position: relative; width: 400px; border: 1px solid #d7d7d7; margin-top: 1em; margin-bottom: 1em; padding: 1px; }
 .progress400 .bar			{ display: block; position: relative; background: #6bba70; text-align: center; font-weight: normal; color: #333; height: 2em; line-height: 2em; }
+
+/************************************************************************************************************************************
+  WEBUDDHA
+************************************************************************************************************************************/
+
+/*******************************************************************************************/
+@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed);
+
+/*******************************************************************************************/
+body {
+  background:#F5F5F5;
+}
+div#bodycol {
+  background:#FFF;
+  width:1000px;
+  margin:0 auto;
+  padding:0;
+  box-shadow:0 0 8px #BBB;
+}
+div#bodycolpad {
+  padding:15px 10px 15px 10px;
+}
+div#bodycol div.centercol {
+  padding:0;
+}
+div#bodycol .logo {
+  float:left;
+}
+
+/*******************************************************************************************/
+div.menubar {
+  clear:both;
+  border:1px solid #CCC;
+  border-radius:8px;
+  background:#EFEFEF;
+  margin:10px 0;
+}
+div.menubar table {
+  border:none;
+  background:none;
+  width:980px;
+  margin:0 auto;
+}
+div.menubar td.menu {
+  background:none;
+  text-align:left;
+}
+div.menubar td.menu .row {
+  padding:0;
+  margin:0;
+}
+div.menubar td.menu .row:nth-child(even) {
+  padding-top:5px;
+}
+div.menubar td.menu.right {
+  text-align:right;
+}
+div.menubar td.menu .row a {
+  display:inline-block;
+  border-radius:6px;
+  background-color:#FFFFFF;
+  /* filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFF', endColorstr='#EEEEEE'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(#EEEEEE)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #FFFFFF,  #EEEEEE); /* for firefox 3.6+ */
+  color:#333;
+  text-decoration:none;
+  padding:2px 10px 4px 10px;
+  line-height:20px;
+  border:1px solid #AAA;
+  box-shadow: 0px 0px 2px #AAA;
+}
+div.menubar td.menu .row a.home {
+  background-color:#6699FF;
+  border:1px solid #777;
+  color:#FFF;
+  /* filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#6699FF', endColorstr='#4477DD'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#6699FF), to(#4477DD)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #6699FF,  #4477DD); /* for firefox 3.6+ */
+}
+div.menubar td.menu .row a.suggestions {
+}
+div.menubar td.menu .row a.bugs {
+}
+div.menubar td.menu .row a.reportbug {
+  background-color:#FFFFCC;
+  /* filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFDD', endColorstr='#FFFFBB'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#FFFFDD), to(#FFFFBB)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #FFFFDD,  #FFFFBB); /* for firefox 3.6+ */
+  color:#333;
+  border:1px solid #DDDDAA;
+}
+div.menubar td.menu .row a.admin {
+  background:#FFDDDD;
+  /* filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFEEEE', endColorstr='#FFCCCC'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#FFEEEE), to(#FFCCCC)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #FFEEEE,  #FFCCCC); /* for firefox 3.6+ */
+}
+div.menubar td.menu .row a.logout {
+  margin-right:10px;
+  float:right;
+  background:#DDDDDD;
+  /* filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EEEEEE', endColorstr='#CCCCCC'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#EEEEEE), to(#CCCCCC)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #EEEEEE,  #CCCCCC); /* for firefox 3.6+ */
+}
+
+/*******************************************************************************************/
+.centercol {
+  padding:10px 0;
+}
+.centercol h3 {
+  color:#336699;
+  font-family: 'Roboto Condensed', sans-serif!important;
+  font-size:18px;
+  font-weight:normal;
+  margin:0;
+  padding:0 0 5px 0;
+}
+.centercol h4 {
+  color:#003377;
+  font-family: 'Roboto Condensed', sans-serif!important;
+  font-size:15px;
+  font-weight:normal;
+  margin:0;
+  padding:0 0 5px 0;
+}
+
+/*******************************************************************************************/
+.centercol .requestList {
+  padding:10px 0;
+}
+.centercol .requestList .clr {
+  clear:both;
+}
+.centercol .requestList .request {
+  margin:0;
+  border-bottom:1px dashed #999;
+  padding:5px 0;
+}
+.centercol .requestList .request .votes {
+  width:48px;
+  height:85px;
+  float:left;
+  text-align:center;
+  margin:0 5px 0 0;
+}
+.centercol .requestList .request .votes input.btn_vote {
+  margin:5px 0 0 0;
+  display:inline-block;
+  padding:2px 6px;
+  font-size:11px;
+}
+.centercol .requestList .request .votes b {
+  padding:10px 0 5px 0;
+  display:block;
+  font-size:1.0rem;
+}
+.centercol .requestList .request .info {
+  height:85px;
+}
+.centercol .requestList .request .key {
+  float:right;
+  line-height:32px;
+}
+.centercol .requestList .request .summary {
+  font-size:1.2rem;
+  line-height:32px;
+  height:32px;
+  overflow:hidden;
+}
+.centercol .requestList .request .summary a {
+  text-decoration:none;
+  color:#346;
+}
+.centercol .requestList .request .status,
+.centercol .requestList .request .created,
+.centercol .requestList .request .updated,
+.centercol .requestList .request .stats {
+  display:inline-block;
+  line-height:24px;
+  padding:0 5px;
+  margin:0 5px;
+}
+.centercol .requestList .request .priority {
+  float:right;
+}
+.centercol .requestList .request .priority,
+.centercol .requestList .request .category {
+  display:inline-block;
+  line-height:24px;
+  padding:0 5px;
+}
+.centercol .requestList .request .status {
+  border-radius:3px;
+  background:#FFFF99;
+  margin:0;
+  float:right;
+}
+.centercol .requestList .request .category {
+  border-radius:3px;
+  background:#FFFF99;
+}
+.centercol .requestList .request .category.bugs {
+  border-radius:3px;
+  background:#CCCCCC;
+}
+.centercol .requestList .request .created {
+  margin-left:0;
+}
+.centercol .requestList .empty_msg {
+  margin:10px 0;
+  padding:10px;
+  border-radius:6px;
+  background:#EEE;
+}
+
+/*******************************************************************************************/
+.centercol .requestListControl .total {
+  display:inline-block;
+}
+.centercol .requestListControl .button {
+  float:right;
+}
+.centercol .requestListControl .button a {
+  padding:4px 10px;
+  margin:0;
+  border-radius:4px;
+  background-color:#EEEEEE;
+  border:1px solid #999;
+  box-shadow:0px 3px 3px #999;
+  text-decoration:none;
+  color:#333;
+}
+.centercol .requestListControl .links {
+  float:right;
+}
+
+/*******************************************************************************************/
+.centercol .searchRequests {
+  margin:10px 0;
+  padding:20px;
+  border-radius:4px;
+  background-color:#FFFFCC;
+  border:1px solid #EEEECC;
+}
+.centercol .searchRequests input[type=text] {
+  font-size:1.0rem;
+  padding:4px;
+  width:440px;
+  margin:0;
+}
+.centercol .searchRequests input[type=submit],
+.centercol .searchRequests input[type=button] {
+  padding:4px 10px;
+  margin:0;
+  border-radius:4px;
+  background-color:#EEEEEE;
+  border:1px solid #999;
+  box-shadow:0px 3px 3px #999;
+}
+
+
+/*******************************************************************************************/
+.centercol h3 {
+  color:#336699;
+  font-family: 'Roboto Condensed', sans-serif!important;
+  font-size:18px;
+  font-weight:normal;
+  margin:0;
+  padding:0 0 5px 0;
+}
+.centercol h4 {
+  color:#003377;
+  font-family: 'Roboto Condensed', sans-serif!important;
+  font-size:15px;
+  font-weight:normal;
+  margin:0;
+  padding:0 0 5px 0;
+}
+.centercol .rColBox {
+  margin:10px 0;
+  padding:20px;
+  border-radius:4px;
+  background-color:#F6F6F6;
+  border:1px solid #E6E6E6;
+}
+.centercol .rColBox hr {
+  margin:10px 0;
+  padding:0;
+  color:#999;
+}
+.centercol .rColBox ul {
+  list-style:circle;
+  padding:0 0 0 24px;
+  margin:0;
+}
+.centercol .rColBox ul li {
+  line-height:18px;
+  padding:0;
+}
+.centercol .rColBox ul li a {
+  text-decoration:none;
+  font-size:11px;
+  color:#333;
+}
+.centercol .rColBox .row {
+}
+.centercol .rColBox .row.sub {
+  padding:0 0 0 10px;
+}
+.centercol .rColBox .row.sub b,
+.centercol .rColBox .row.sub span {
+  font-size:10px;
+}
+.centercol .rColBox.visited,
+.centercol .rColBox.visited a {
+  font-size:11px;
+  color:#333;
+}
+
+/*******************************************************************************************/
+.centercol form select,
+.centercol form input[type=text],
+.centercol form textarea {
+  padding:4px;
+  font-size:14px;
+}
+
+/*******************************************************************************************/
+.centercol .buttons_view_bug tr td {
+  white-space:nowrap;
+}
+
+/*******************************************************************************************/
+.centercol .please-login {
+  font-size:14px;
+  padding:10px 0;
+  margin:10px auto;
+  width:80%;
+  border-radius:4px;
+  background-color:#FFFFCC;
+  border:1px solid #EEEECC;
+}
+
+/*******************************************************************************************/
+.centercol input.button,
+.centercol input.button-small {
+  border-radius:2px;
+  border:1px solid #999;
+  background:#EEE;
+  /* filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EFEFEF', endColorstr='#CCCCCC'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#EFEFEF), to(#CCCCCC)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #EFEFEF,  #CCCCCC); /* for firefox 3.6+ */
+  padding:2px 6px;
+  color:#333;
+}
+.centercol input.button.btn_vote {
+  background-color:#6699FF;
+  border:1px solid #777;
+  color:#FFF;
+  /* filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#6699FF', endColorstr='#4477DD'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#6699FF), to(#4477DD)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #6699FF,  #4477DD); /* for firefox 3.6+ */
+}
+.centercol input.button[disabled=disabled] {
+  border:1px solid #CCC;
+  background:#EEE;
+  color:#999;
+}
+
+/*******************************************************************************************/
+.centercol tr.row-1 { background-color: #F0F0F0; }
+.centercol tr.row-2 { background-color: #F0F0F0; }
+.centercol td.category { background-color: #DDDDDD; }
+.centercol tr.row-category,
+.centercol tr.row-category2 { background-color: #DDDDDD; }
+.centercol tr.row-category a,
+.centercol tr.row-category2 a {}
+.centercol tr td .issue-status {
+  border:none;
+}
+
+/*******************************************************************************************/
+.filterForm table tr td.small-caption.active {
+  background-color:#AAFFAA;
+}

@@ -1,4 +1,8 @@
 <?php
+
+# Webuddha
+$s_email_notification_title_for_action_vote = 'Issue %1$s was voted on by user %2$s.';
+
 /** MantisBT - a php based bugtracking system
  *
  * Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
@@ -1006,7 +1010,7 @@ $s_email_user_updated_msg = 'Your account has been updated by an administrator. 
 # menu_inc.php
 $s_main_link = 'Main';
 $s_view_bugs_link = 'View Issues';
-$s_report_bug_link = 'Report Issue';
+$s_report_bug_link = 'Submit a Request';
 $s_changelog_link = 'Change Log';
 $s_roadmap_link = 'Roadmap';
 $s_summary_link = 'Summary';
@@ -1587,3 +1591,28 @@ $s_month_september = 'September';
 $s_month_october = 'October';
 $s_month_november = 'November';
 $s_month_december = 'December';
+
+# WEBUDDHA
+$s_tags_link = 'Tags';
+$s_config_link = 'Config';
+$s_implemented = 'Implemented';
+
+$s_status_enum_string = '10:New,20:Feedback,30:Under Review,40:Planned,50:In Progress,80:Implemented,85:Resolved,90:Closed';
+
+$s_feedback_bug_title = 'Issue Feedback';
+$s_feedback_bug_button = 'Mark as Feedback';
+$s_acknowledged_bug_title = 'Issue Under Review';
+$s_acknowledged_bug_button = 'Mark as Under Review';
+$s_confirmed_bug_title = 'Issue Planned';
+$s_confirmed_bug_button = 'Mark as Planned';
+$s_assigned_bug_title = 'Issue In Progress';
+$s_assigned_bug_button = 'Mark as In Progress';
+$s_implemented_bug_title = 'Issue Implemented';
+$s_implemented_bug_button = 'Mark as Implemented';
+$s_resolved_bug_title = 'Issue Resolved';
+$s_resolved_bug_button = 'Mark as Resolved';
+$s_closed_bug_title = 'Issue Closed';
+$s_closed_bug_button = 'Mark as Closed';
+
+$s_resolution_enum_string = '10:open,20:fixed,25:added,30:reopened,40:unable to reproduce,50:not fixable,60:duplicate,70:no change required,80:suspended,90:won\'t fix';
+$s_fixed_in_version = 'Applied to Version';

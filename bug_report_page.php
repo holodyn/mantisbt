@@ -88,7 +88,13 @@
 		$f_due_date				= $t_bug->due_date;
 
 		$t_project_id			= $t_bug->project_id;
-	} else {
+
+    $f_date_submitted = gpc_get_string( 'date_submitted', '');
+    if ( $f_date_submitted == '' ) {
+      $f_date_submitted = date_get_null();
+    }
+
+} else {
 		# Get Project Id and set it as current
 		$t_project_id = gpc_get_int( 'project_id', helper_get_current_project() );
 		if( ( ALL_PROJECTS == $t_project_id || project_exists( $t_project_id ) )
@@ -116,7 +122,9 @@
 		$f_profile_id			= gpc_get_int( 'profile_id', 0 );
 		$f_handler_id			= gpc_get_int( 'handler_id', 0 );
 
-		$f_category_id			= gpc_get_int( 'category_id', 0 );
+    $f_status           = gpc_get_string( 'status', config_get( 'bug_submit_status' ) );
+
+    $f_category_id      = gpc_get_int( 'category_id', 4 );
 		$f_reproducibility		= gpc_get_int( 'reproducibility', config_get( 'default_bug_reproducibility' ) );
 		$f_eta					= gpc_get_int( 'eta', config_get( 'default_bug_eta' ) );
 		$f_severity				= gpc_get_int( 'severity', config_get( 'default_bug_severity' ) );
@@ -126,6 +134,12 @@
 		$f_steps_to_reproduce	= gpc_get_string( 'steps_to_reproduce', config_get( 'default_bug_steps_to_reproduce' ) );
 		$f_additional_info		= gpc_get_string( 'additional_info', config_get ( 'default_bug_additional_info' ) );
 		$f_view_state			= gpc_get_int( 'view_state', config_get( 'default_bug_view_status' ) );
+
+    $f_date_submitted = gpc_get_string( 'date_submitted', '');
+    if ( $f_date_submitted == '' ) {
+      $f_date_submitted = date_get_null();
+    }
+
 		$f_due_date				= gpc_get_string( 'due_date', '');
 
 		if ( $f_due_date == '' ) {
@@ -142,6 +156,9 @@
 	$t_fields = config_get( 'bug_report_page_fields' );
 	$t_fields = columns_filter_disabled( $t_fields );
 
+  $tpl_show_tags = access_has_global_level( config_get( 'tag_view_threshold' ) );
+  $tpl_can_attach_tag = $tpl_show_tags && access_has_global_level( config_get( 'tag_attach_threshold' ) );
+
 	$tpl_show_category = in_array( 'category_id', $t_fields );
 	$tpl_show_reproducibility = in_array( 'reproducibility', $t_fields );
 	$tpl_show_eta = in_array( 'eta', $t_fields );
@@ -153,8 +170,9 @@
 	$tpl_show_platform = $tpl_show_profiles && in_array( 'platform', $t_fields );
 	$tpl_show_os = $tpl_show_profiles && in_array( 'os', $t_fields );
 	$tpl_show_os_version = $tpl_show_profiles && in_array( 'os_version', $t_fields );
-	$tpl_show_resolution = in_array('resolution', $t_fields);
-	$tpl_show_status = in_array('status', $t_fields);
+
+  $tpl_show_status = in_array('status', $t_fields) || access_has_project_level(config_get( 'update_bug_assign_threshold' ));
+  $tpl_show_resolution = in_array('resolution', $t_fields) || access_has_project_level(config_get( 'update_bug_assign_threshold' ));
 
 	$tpl_show_versions = version_should_show_product_version( $t_project_id );
 	$tpl_show_product_version = $tpl_show_versions && in_array( 'product_version', $t_fields );
@@ -267,6 +285,26 @@
 	</tr>
 <?php
 	}
+
+  if ( access_has_project_level(config_get( 'update_bug_assign_threshold' )) ) {
+    $t_date_to_display = date( config_get( 'calendar_date_format' ), db_now() );
+    if ( !date_is_null( $f_date_submitted ) ) {
+      $t_date_to_display = date( config_get( 'calendar_date_format' ), $f_date_submitted );
+    }
+    ?>
+    <tr <?php echo helper_alternate_class() ?>>
+      <td class="category">
+        <?php print_documentation_link( 'date_submitted' ) ?>
+      </td>
+      <td>
+      <?php
+        print "<input ".helper_get_tab_index()." type=\"text\" id=\"date_submitted\" name=\"date_submitted\" size=\"20\" maxlength=\"16\" value=\"".$t_date_to_display."\" />";
+        date_print_calendar('trigger_submitted');
+      ?>
+      </td>
+    </tr>
+    <?php
+  }
 
 	if ( $tpl_show_due_date ) {
 		$t_date_to_display = '';
@@ -495,6 +533,16 @@
 		</tr>
 <?php } ?>
 
+<?php if ( $tpl_can_attach_tag ) { ?>
+    <tr <?php echo helper_alternate_class() ?>>
+      <td class="category">
+        <?php echo lang_get( 'tags' ) ?>
+      </td>
+      <td>
+        <?php print_tag_input( $p_bug_id, $p_string ); ?>
+      </td>
+    </tr>
+<?php } ?>
 <?php if ( $tpl_show_additional_info ) { ?>
 	<tr <?php echo helper_alternate_class() ?>>
 		<td class="category">
@@ -624,6 +672,9 @@
 -->
 </script>
 <?php  }
+if ( access_has_project_level(config_get( 'update_bug_assign_threshold' )) ) {
+  date_finish_calendar( 'date_submitted', 'trigger_submitted' );
+}
 if ( $tpl_show_due_date ) {
 	date_finish_calendar( 'due_date', 'trigger' );
 }

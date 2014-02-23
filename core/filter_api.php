@@ -969,6 +969,9 @@ function filter_get_query_sort_data( &$p_filter, $p_show_sticky, $p_query_clause
 	if( !in_array( 'date_submitted', $t_sort_fields ) ) {
 		$p_query_clauses['order'][] = "$t_bug_table.date_submitted DESC";
 	}
+  if( !in_array( 'vote_count', $t_sort_fields ) ) {
+    $p_query_clauses['order'][] = "$t_bug_table.vote_count DESC";
+  }
 
 	return $p_query_clauses;
 }
@@ -1039,6 +1042,7 @@ function filter_get_bug_rows( &$p_page_number, &$p_per_page, &$p_page_count, &$p
 	$t_bugnote_text_table = db_get_table( 'mantis_bugnote_text_table' );
 	$t_project_table = db_get_table( 'mantis_project_table' );
 	$t_bug_monitor_table = db_get_table( 'mantis_bug_monitor_table' );
+  $t_bug_vote_table = db_get_table( 'mantis_bug_vote_table' );
 	$t_limit_reporters = config_get( 'limit_reporters' );
 	$t_bug_relationship_table = db_get_table( 'mantis_bug_relationship_table' );
 	$t_report_bug_threshold = config_get( 'report_bug_threshold' );
@@ -1099,6 +1103,7 @@ function filter_get_bug_rows( &$p_page_number, &$p_per_page, &$p_page_count, &$p
 	);
 	$t_select_clauses = array(
 		"$t_bug_table.*",
+    "(SELECT COUNT(*) FROM $t_bug_vote_table WHERE `bug_id` = $t_bug_table.id AND `user_id` = $t_user_id) AS `voted_byuser`",
 	);
 
 	$t_join_clauses = array();
@@ -2130,6 +2135,8 @@ function filter_draw_selection_area2( $p_page_number, $p_for_screen = true, $p_e
 	$t_trclass = 'row-category2';
 	$t_action = 'view_all_set.php?f=3';
 
+  $autoCollapse = false;
+
 	if( $p_for_screen == false ) {
 		$t_tdclass = 'print';
 		$t_trclass = '';
@@ -2138,7 +2145,7 @@ function filter_draw_selection_area2( $p_page_number, $p_for_screen = true, $p_e
 	?>
 
 		<br />
-		<form method="post" name="filters<?php echo $t_form_name_suffix?>" id="filters_form<?php echo $t_form_name_suffix?>" action="<?php echo $t_action;?>">
+    <form method="post" name="filters<?php echo $t_form_name_suffix?>" id="filters_form<?php echo $t_form_name_suffix?>" action="<?php echo $t_action;?>" class="filterForm">
 		<?php # CSRF protection not required here - form does not result in modifications ?>
 		<input type="hidden" name="type" value="1" />
 		<?php
@@ -2346,8 +2353,9 @@ function filter_draw_selection_area2( $p_page_number, $p_for_screen = true, $p_e
 		}
 		?>
 			</td>
-			<td colspan="2" class="small-caption" valign="top" id="show_category_filter_target">
+
 							<?php
+      ob_start();
 								$t_output = '';
 		$t_any_found = false;
 		if( count( $t_filter[FILTER_PROPERTY_CATEGORY] ) == 0 ) {
@@ -2375,8 +2383,10 @@ function filter_draw_selection_area2( $p_page_number, $p_for_screen = true, $p_e
 				echo $t_output;
 			}
 		}
+      $html = ob_get_clean();
+      echo '<td colspan="2" class="small-caption'.(!$t_any_found?' active':'').'" valign="top" id="show_category_filter_target">' . $html . '</td>';
 		?>
-			</td>
+
 			<td class="small-caption" valign="top" id="show_severity_filter_target">
 							<?php
 								$t_output = '';
@@ -3414,7 +3424,8 @@ function filter_draw_selection_area2( $p_page_number, $p_for_screen = true, $p_e
 	// expanded
 	?>
 		<tr>
-			<td colspan="2">
+      <td colspan="2" nowrap>
+        <?php if( $autoCollapse ){ ?><script> ToggleDiv('filter'); </script><?php } ?>
 				<?php
 					collapse_icon( 'filter' );
 	echo lang_get( 'search' ) . '&#160;';
@@ -3442,14 +3453,11 @@ function filter_draw_selection_area2( $p_page_number, $p_for_screen = true, $p_e
 	}
 
 	if( access_has_project_level( config_get( 'create_permalink_threshold' ) ) ) {
-		print_bracket_link( 'permalink_page.php?url=' . urlencode( filter_get_url( $t_filter ) ), lang_get( 'create_filter_link' ),
-
-		/* new window = */
-		true );
+            print_bracket_link( 'permalink_page.php?url=' . urlencode( filter_get_url( $t_filter ) ), lang_get( 'create_filter_link' ), true );
 	}
 	?>
 			</td>
-			<td class="right" colspan="4">
+      <td class="right" colspan="4" nowrap>
 			<?php
 			$t_stored_queries_arr = array();
 	$t_stored_queries_arr = filter_db_get_available_queries();

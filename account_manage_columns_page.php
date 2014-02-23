@@ -37,6 +37,9 @@
 
 	current_user_ensure_unprotected();
 
+  if( !access_has_global_level( config_get( 'manage_columns_threshold' ) ) )
+    trigger_error( ERROR_ACCESS_DENIED, ERROR );
+
 	include ( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'manage_columns_inc.php' );
 
 	html_page_bottom();
