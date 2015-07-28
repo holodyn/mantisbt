@@ -994,6 +994,12 @@
 	 */
 	$g_show_changelog_obsolete = OFF;
 
+  /**
+	 * Show resolved items with no version
+	 * @global int $g_show_changelog_noversion
+	 */
+	$g_show_changelog_noversion = OFF;
+
 	/**
 	 * Show release dates on roadmap
 	 * @global int $g_show_roadmap_dates
