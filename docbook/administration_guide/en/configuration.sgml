@@ -267,7 +267,7 @@
             <varlistentry>
                 <term>$g_global_settings</term>
                 <listitem>
-                    <para>This option contains the list of regular expressions that are used to determine if it is allowed for a specific configuraiton option to be saved to or loaded from the database.  Configuration options that matches the regular expressions are considered global only and hence are only configurable via the config_inc.php file and defaulted by config_defaults_inc.php file.</para>
+                    <para>This option contains the list of configuration options that are used to determine if it is allowed for a specific configuration option to be saved to or loaded from the database.  Configuration options that are in the list are considered global only and hence are only configurable via the config_inc.php file and defaulted by config_defaults_inc.php file.</para>
                 </listitem>
             </varlistentry>
         </variablelist>
@@ -551,7 +551,7 @@
                 </listitem>
             </varlistentry>
 			<varlistentry>
-				<term>$g_phpmailer_method</term>
+				<term>$g_phpMailer_method</term>
 				<listitem>
 					<para>Select the method to send mail:
 						<itemizedlist>
@@ -1492,7 +1492,7 @@
                 <term>$g_view_summary_threshold</term>
                 <listitem>
                     <para>Specifies the access level required to view the summary
-                        page. Default is VIEWER.
+                        page. Default is MANAGER.
                     </para>
                 </listitem>
             </varlistentry>
@@ -2406,7 +2406,7 @@
                 </listitem>
             </varlistentry>
             <varlistentry>
-                <term>$g_allow_bug_delete_access_level</term>
+                <term>$g_delete_bug_threshold</term>
                 <listitem>
                     <para>Allow the specified access level and above to delete
                         bugs.

@@ -713,7 +713,7 @@ function file_add( $p_bug_id, $p_file, $p_table = 'bug', $p_title = '', $p_desc 
 
 				chmod( $t_disk_file_name, config_get( 'attachments_file_permissions' ) );
 
-				$c_content = "''";
+				$c_content = '';
 			} else {
 				trigger_error( ERROR_FILE_DUPLICATE, ERROR );
 			}
@@ -930,19 +930,22 @@ function file_copy_attachments( $p_source_bug_id, $p_dest_bug_id ) {
 			}
 		}
 
-		$query = "INSERT INTO $t_mantis_bug_file_table
-							( bug_id, title, description, diskfile, filename, folder, filesize, file_type, date_added, content )
-							VALUES ( " . db_param() . ",
-									 " . db_param() . ",
-									 " . db_param() . ",
-									 " . db_param() . ",
-									 " . db_param() . ",
-									 " . db_param() . ",
-									 " . db_param() . ",
-									 " . db_param() . ",
-									 " . db_param() . ",
-									 " . db_param() . ");";
-		db_query_bound( $query, Array( $p_dest_bug_id, $t_bug_file['title'], $t_bug_file['description'], $t_new_diskfile_name, $t_new_file_name, $t_file_path, $t_bug_file['filesize'], $t_bug_file['file_type'], $t_bug_file['date_added'], $t_bug_file['content'] ) );
+		$t_query = 'INSERT INTO ' . $t_mantis_bug_file_table . ' (
+				bug_id, title, description, diskfile, filename, folder,
+				filesize, file_type, date_added, user_id, content
+			)
+			VALUES ( '
+			. db_param() . ', ' . db_param() . ', ' . db_param() . ', '
+			. db_param() . ', ' . db_param() . ', ' . db_param() . ', '
+			. db_param() . ', ' . db_param() . ', ' . db_param() . ', '
+			. db_param() . ', ' . db_param() .
+			')';
+		db_query_bound( $t_query, array(
+			$p_dest_bug_id, $t_bug_file['title'], $t_bug_file['description'],
+			$t_new_diskfile_name, $t_new_file_name, $t_file_path,
+			$t_bug_file['filesize'], $t_bug_file['file_type'], $t_bug_file['date_added'],
+			$t_bug_file['user_id'], $t_bug_file['content']
+		) );
 	}
 }
 

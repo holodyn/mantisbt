@@ -226,7 +226,7 @@ function collapse_cache_token() {
 		$t_data = explode( '|', $t_cookie );
 
 		foreach( $t_data as $t_pair ) {
-			$t_pair = explode( ',', $t_pair );
+			$t_pair = explode( ':', $t_pair );
 
 			if( false !== $t_pair && count( $t_pair ) == 2 ) {
 				$g_collapse_cache_token[$t_pair[0]] = ( true == $t_pair[1] );
@@ -234,11 +234,15 @@ function collapse_cache_token() {
 			}
 		}
 
+		if( !$t_update ) {
+			$t_token = token_get( TOKEN_COLLAPSE );
+			$t_update = $t_token !== null;
+		}
 		if( $t_update ) {
-			$t_token = serialize( $g_collapse_cache_token );
-			token_set( TOKEN_COLLAPSE, $t_token, TOKEN_EXPIRY_COLLAPSE );
-		} else {
-			token_touch( TOKEN_COLLAPSE );
+			$t_value = serialize( $g_collapse_cache_token );
+			token_set( TOKEN_COLLAPSE, $t_value, TOKEN_EXPIRY_COLLAPSE );
+		} elseif( token_exists( $t_token['id'] ) ) {
+			token_touch( $t_token['id'] );
 		}
 
 		gpc_clear_cookie( 'MANTIS_collapse_settings' );
